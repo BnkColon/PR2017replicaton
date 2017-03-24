@@ -30,27 +30,34 @@ You may find it helpful to use the version control and code sharing system calle
 ## Questions:
 
 ### Exploratory analysis of pharmacogenomic data
+
 <hr>
 #### 1. How many cell-lines are contained in the data?
 <hr>
+
   We are using the unique command in the file called pharmacoData. There we access the column called cell-lines and then run the command to get results.
+
 ```{r}
  # The unique command returns each different lable in the desired column in this case the cell-lines. Combining this with the length command we obtain the total number of different data labels contained within the cell-lines column.
 length(unique(pharmacoData$cellLine))
 
 # The result of cell-lines is 288. 
 ```
+
 <hr>
 #### 2. What drug concentrations were used in each study?
 <hr>
+
 ```{r}
 # 
 tapply( pharmacoData$doseID, pharmacoData$study, function(x){length( unique( x ) )})
 # The output displays the different drug concentrations used.
 ```
+
 <hr>
 #### 3. Histograms, appart from telling how is the data distributed, can also make evident potential problems with the data. Plot a histogram of drug viabilities. Does it look as one would expect from the description of the data?
 <hr>
+
 ```{r}
 # Remember to call the function install.packages("cowplot") and load the this package with the function library("cowplot") in order to have the ggplot available.
 
@@ -67,17 +74,17 @@ ggplot( pharmacoData, aes(viability ) ) + geom_histogram(fill = "yellow", colour
 <hr>
 #### 4. How many viability data points are within the expected range according to the definition of viability (e.g. above 0 and below 100)? Try to come up with explanations about the values that are out of range. Are these due to technical issues? Biology?
 <hr>
+
 ```{r}
 #Your code goes here
-ggplot( pharmacoData, aes( viability, group=study, colour=study) ) + geom_density(fill="yellow", lwd=2, alpha=0.1) + xlim(0, 170)
-
-#
-ggplot( pharmacoData, aes( y=viability, x=drug, fill=study) ) + geom_boxplot() + theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust=.5)) + ylim(0, 200)
-
+v<-(pharmacoData$viability)
+sum(v>=0&v<=100)
 ```
+
 <hr>
 #### 5. Read the csv file containing the summarized data files. What kind of variables are in the data? What does each column represents?
 <hr>
+
 To view the data input the code: *View(pharmacoData)*. 
 
 The column cell line is a data label that represents the source of the cell line. The column drug is a data label that stands for the name of the pharmaco used in the study.
@@ -93,15 +100,18 @@ The column auc_gdsc is a data label that refers to the area under the curve in t
 <hr>
 #### 6. Plot a histogram of the viability scores as a function of the drug doses. Are stronger drug concentrations consistent with lower viability scores?
 <hr>
+
 ```{r}
 #Your code goes here
 
 ```
 
 ### Using Correlation Measures to Assess Replicability of Drug Response Studies
+
 <hr>
 ####1. Create a scatterplot for each drug comparing the AUC in GDSC and CCLE for all cell lines (hint: code from Tutorial 2 may help).
 <hr>
+
 ```{r}
 #Your code goes here
 AUC_study1 <- rbeta(200, 1, 5)
@@ -114,45 +124,55 @@ resistant <- data.frame(AUC_study1, AUC_study2)
 ggplot(resistant, aes( y=AUC_study2, x=AUC_study1) ) + geom_point() + ggtitle("Simulated AUC of resistant cell lines") + xlim(0,1) + ylim(0,1)
 
 ```
+
 <hr>
 ####2. Calculate correlation coefficients of the AUC in GDSC and CCLE for each drug (hint: code from Tutorial 2 may help). 
 </hr>
+
 ```{r}
 #Your code goes here
 ```
+
 <hr>
 ####3. Based on the scatterplot and correlation values, would you say that they tend to agree? Why or why not?
 </hr>
+
 ```{r}
 #Your code goes here
 ```
 <hr>
 ####4. Does the AUC or IC50 suggest more agreement between the studies? 
 </hr>
+
 ```{r}
 #Your code goes here
 ```
 <hr>
 ####5. Which drug do you think shows the most consistency between the studies? How about the least? 
 </hr>
+
 ```{r}
 #Your code goes here
 ```
+
 <hr>
 ####6. If you calculated more than one type of correlation coefficient (for example Pearson and Spearman), how do they differ? Which do you think is a better summary of the consistency between the two studies? 
 </hr>
+
 ```{r}
 #Your code goes here
 ```
+
 <hr>
 ####7. We have explored Pearson and Spearman correlation, but what about other correlation measures? For example, you could try out distance correlation, which is sensitive to nonlinear relationships. You can find this measure in the `energy` R package, which you'll need to install and load with the following commands:
 </hr>
-    ```{r, eval=FALSE}
-    install.packages("energy")
-    load(energy)
-    ```
 
-    Then, you can compute distance correlation with the `dcor()` function. How does this correlation measure compare to Pearson and Spearman? Do your conclusions about the agreement between the two studies change at all using this measure?
+```{r, eval=FALSE}
+install.packages("energy")
+load(energy)
+```
+
+Then, you can compute distance correlation with the `dcor()` function. How does this correlation measure compare to Pearson and Spearman? Do your conclusions about the agreement between the two studies change at all using this measure?
 
 ### Identifying biological factors that influence replicability of pharmacogenomic studies
 
