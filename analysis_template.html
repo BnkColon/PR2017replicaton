@@ -129,15 +129,19 @@ $(document).ready(function () {
 <p>The questions below will help guide you in your analyses and interpretation of results. You don’t need to answer every question, but for the problems you do complete, make sure that you completely justify your conclusions by explaining your reasoning and including numerical summaries and data visualizations wherever possible. There are four tutorials (also R Markdown documents) that will help you learn new tools to tackle these problems, and the questions are divided into four sections corresponding to the tutorials (though many overlap with more than one tutorial). If questions arise during your analyses that do not fit into these problems, feel free to include those as well.</p>
 <p>For each answer, include text by simply typing below the question. Include code in code blocks (include three back ticks at the start and end of each code block):</p>
 <p>You may find it helpful to use the version control and code sharing system called GitHub to work together with your team so that all of you can edit the same document and keep track of its changes. Here is a <a href="https://github.com/datasciencelabs/2016/blob/master/lectures/git-and-github/setting-up-git.Rmd">setup guide</a> and <a href="https://github.com/datasciencelabs/2016/blob/master/lectures/git-and-github/version-control.Rmd">brief introduction to Git and GitHub</a> from another course. The mentors will be able to help if you run into problems.</p>
+<hr>
+</hr>
+<hr>
+</hr>
+<p>The data we are using in this Replicathon stems from two different investigations; article <em>Systematic identification of genomic markers of drug sensitivy in cancer cells</em> (CGP) and article <em>The Cancer Cell Line Encyclopedia enables predictive modelling of anticancer drug sensivity</em> (CCLE). To have R Studio access the data, we used the following string of code:</p>
+<pre class="r"><code># The file &quot;rawPharmacoData.csv&quot; contains the raw data to be analyzed.
+rawFile &lt;- &quot;rawPharmacoData.csv&quot;
+pharmacoData &lt;- read.csv(rawFile)</code></pre>
 </div>
 <div id="questions" class="section level2">
 <h2>Questions:</h2>
 <div id="exploratory-analysis-of-pharmacogenomic-data" class="section level3">
 <h3>Exploratory analysis of pharmacogenomic data</h3>
-<p>The data we are using in this Replicathon stems from two different investigations; article <em>Systematic identification of genomic markers of drug sensitivy in cancer cells</em> and article <em>The Cancer Cell Line Encyclopedia enables predictive modelling of anticancer drug sensivity</em>. To have R Studio access the data, we used the following string of code:</p>
-<pre class="r"><code># The file &quot;rawPharmacoData.csv&quot; contains the raw data to be analyzed.
-rawFile &lt;- &quot;rawPharmacoData.csv&quot;
-pharmacoData &lt;- read.csv(rawFile)</code></pre>
 <hr>
 <div id="how-many-cell-lines-are-contained-in-the-data" class="section level4">
 <h4>1. How many cell-lines are contained in the data?</h4>
@@ -168,11 +172,11 @@ length(unique(pharmacoData$cellLine))</code></pre>
 install.packages(&quot;cowplot&quot;, repos='http://cran.us.r-project.org')</code></pre>
 <pre><code>## 
 ## The downloaded binary packages are in
-##  /var/folders/xj/lb6_8vsd4tq2fv__651wg38h0000gn/T//RtmpxAe1wt/downloaded_packages</code></pre>
+##  /var/folders/xj/lb6_8vsd4tq2fv__651wg38h0000gn/T//RtmpSpdHED/downloaded_packages</code></pre>
 <pre class="r"><code>install.packages(&quot;ggplot2&quot;, repos='http://cran.us.r-project.org')</code></pre>
 <pre><code>## 
 ## The downloaded binary packages are in
-##  /var/folders/xj/lb6_8vsd4tq2fv__651wg38h0000gn/T//RtmpxAe1wt/downloaded_packages</code></pre>
+##  /var/folders/xj/lb6_8vsd4tq2fv__651wg38h0000gn/T//RtmpSpdHED/downloaded_packages</code></pre>
 <pre class="r"><code>library(&quot;cowplot&quot;)</code></pre>
 <pre><code>## Loading required package: ggplot2</code></pre>
 <pre><code>## 
@@ -422,7 +426,7 @@ drugCorrs</code></pre>
 <pre class="r"><code>install.packages(&quot;energy&quot;, repos='http://cran.us.r-project.org')</code></pre>
 <pre><code>## 
 ## The downloaded binary packages are in
-##  /var/folders/xj/lb6_8vsd4tq2fv__651wg38h0000gn/T//RtmpxAe1wt/downloaded_packages</code></pre>
+##  /var/folders/xj/lb6_8vsd4tq2fv__651wg38h0000gn/T//RtmpSpdHED/downloaded_packages</code></pre>
 <p>Then, you can compute distance correlation with the <code>dcor()</code> function. How does this correlation measure compare to Pearson and Spearman? Do your conclusions about the agreement between the two studies change at all using this measure?</p>
 <pre class="r"><code>library(energy)
 library(dplyr)

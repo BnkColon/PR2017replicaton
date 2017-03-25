@@ -2,7 +2,7 @@
 title: "#TEAMRUBIOS"
 output: html_document
 date: Replicathon 2017
-author: Diane Mankin-Cruz, Luis E. Rodriguez-Reyes, Danny Picart-Laguer, Bianca I. Colón-Rosado, Luis A. Quiñones-Piris
+author: Diane Mankin-Cruz, Luis E. Rodriguez-Reyes, Bianca I. Colón-Rosado, Luis A. Quiñones-Piris
 ---
 
 ```{r setup, include=FALSE}
@@ -19,17 +19,22 @@ For each answer, include text by simply typing below the question. Include code 
 
 You may find it helpful to use the version control and code sharing system called GitHub to work together with your team so that all of you can edit the same document and keep track of its changes. Here is a [setup guide](https://github.com/datasciencelabs/2016/blob/master/lectures/git-and-github/setting-up-git.Rmd) and [brief introduction to Git and GitHub](https://github.com/datasciencelabs/2016/blob/master/lectures/git-and-github/version-control.Rmd) from another course. The mentors will be able to help if you run into problems. 
 
-## Questions:
+<hr>
+</hr>
+<hr>
+</hr>
 
-### Exploratory analysis of pharmacogenomic data
-
-The data we are using in this Replicathon stems from two different investigations; article *Systematic identification of genomic markers of drug sensitivy in cancer cells* and article *The Cancer Cell Line Encyclopedia enables predictive modelling of anticancer drug sensivity*. To have R Studio access the data, we used the following string of code:
+The data we are using in this Replicathon stems from two different investigations; article *Systematic identification of genomic markers of drug sensitivy in cancer cells* (CGP) and article *The Cancer Cell Line Encyclopedia enables predictive modelling of anticancer drug sensivity* (CCLE). To have R Studio access the data, we used the following string of code:
 ```{r}
 # The file "rawPharmacoData.csv" contains the raw data to be analyzed.
 rawFile <- "rawPharmacoData.csv"
 pharmacoData <- read.csv(rawFile)
 
 ```
+
+## Questions:
+
+### Exploratory analysis of pharmacogenomic data
 
 <hr>
 #### 1. How many cell-lines are contained in the data?
