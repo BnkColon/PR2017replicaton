@@ -39,6 +39,7 @@ You may find it helpful to use the version control and code sharing system calle
 
 ```{r}
  # The unique command returns each different lable in the desired column in this case the cell-lines. Combining this with the length command we obtain the total number of different data labels contained within the cell-lines column.
+
 length(unique(pharmacoData$cellLine))
 
 # The result of cell-lines is 288. 
@@ -48,15 +49,20 @@ length(unique(pharmacoData$cellLine))
 #### 2. What drug concentrations were used in each study?
 <hr>
 
+The output displays the different drug concentrations used, in the CCLE cell lonestudy, 8 different pharmaco concentrations were used, whereas in the CCLE cell line study, 9 pharmaco concentrations were used.
+
 ```{r}
-# 
+ 
 tapply( pharmacoData$doseID, pharmacoData$study, function(x){length( unique( x ) )})
-# The output displays the different drug concentrations used.
+
 ```
 
 <hr>
 #### 3. Histograms, appart from telling how is the data distributed, can also make evident potential problems with the data. Plot a histogram of drug viabilities. Does it look as one would expect from the description of the data?
 <hr>
+
+Viability is defined the percentage of cells that survive upon exposure to a certain drug. The histograms present the frequency distribution of distinct cell lines, drugs, concentrations used in two different studies: CCLE and GDSC. If the asumtion is that the pharmacological agent is meant to diminish the concentration ****CHECK***
+
 
 ```{r}
 # Remember to call the function install.packages("cowplot") and load the this package with the function library("cowplot") in order to have the ggplot available.
@@ -68,15 +74,20 @@ library("cowplot")
 library("ggplot2")
 
 # The ggplot command is a data visualization package. The aes function creates a list of unevaluated variables. The command geom_histogram let us create histograms to visualize the data. The command facet_wrap lets us stratify the data for each study. 
+
 ggplot( pharmacoData, aes(viability ) ) + geom_histogram(fill = "yellow", colour="black") + facet_wrap(~study)
+
 ```
+
 
 <hr>
 #### 4. How many viability data points are within the expected range according to the definition of viability (e.g. above 0 and below 100)? Try to come up with explanations about the values that are out of range. Are these due to technical issues? Biology?
 <hr>
 
+Defining viability as the percentage of cells that survive upon exposure to a certain drug, the range of survival should be between 0% and 100%- asuming no additional growth happens. The data points contained in (0,100) would be 27,626 observations out of a sample of 43427. Notwithstanding, many outliers were found, totaling a number of 15,801 observations, that make up aproximately 36.39% of the total sample. This large number of outliers could be related to many factors such as: the organism's tolerance of the pharmacological agents, faulty pharmacological agents, human error, measurement error, and other environmental interactions occurring in the pietry dish.  
+
 ```{r}
-#Your code goes here
+#
 v<-(pharmacoData$viability)
 sum(v>=0&v<=100)
 ```
@@ -101,9 +112,11 @@ The column auc_gdsc is a data label that refers to the area under the curve in t
 #### 6. Plot a histogram of the viability scores as a function of the drug doses. Are stronger drug concentrations consistent with lower viability scores?
 <hr>
 
-```{r}
-#Your code goes here
+From the previous histogram, there is a tendency to an inversely proportional relationship between the variables of viability and drug concentration. An increase in the drug concentrations lowers the viability of the cell lines. An important point should be made in regards to this data: an increase in drug concentration favor the elimination of cancerous cells, yet more research should be made in considering the systemic effects of the concentrations on the host.
 
+```{r}
+#
+ggplot( pharmacoData, aes( y=viability, x=doseID, fill=study) ) + geom_boxplot() + theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust=.5)) + ylim(0, 200)
 ```
 
 ### Using Correlation Measures to Assess Replicability of Drug Response Studies
@@ -112,16 +125,12 @@ The column auc_gdsc is a data label that refers to the area under the curve in t
 ####1. Create a scatterplot for each drug comparing the AUC in GDSC and CCLE for all cell lines (hint: code from Tutorial 2 may help).
 <hr>
 
-```{r}
-#Your code goes here
-AUC_study1 <- rbeta(200, 1, 5)
-AUC_study2 <- rbeta(200, 1, 5)
+```{r, fig.width=10, fig.height=10}
+library(ggplot2)
 
-#Your code goes here
-resistant <- data.frame(AUC_study1, AUC_study2)
+cellLinesSummary <- read.csv("summarizedPharmacoData.csv", header=TRUE)
 
-#Your code goes here
-ggplot(resistant, aes( y=AUC_study2, x=AUC_study1) ) + geom_point() + ggtitle("Simulated AUC of resistant cell lines") + xlim(0,1) + ylim(0,1)
+ggplot(aes(x=auc_GDSC, y=auc_CCLE), data=cellLinesSummary) + facet_wrap( ~ drug) + geom_point() + xlab("GDSC AUC") + ylab("CCLE AUC") 
 
 ```
 
@@ -130,29 +139,70 @@ ggplot(resistant, aes( y=AUC_study2, x=AUC_study1) ) + geom_point() + ggtitle("S
 </hr>
 
 ```{r}
-#Your code goes here
+library(dplyr)
+
+drugCorrs <- cellLinesSummary %>% 
+    group_by(drug) %>% summarise(Pearson_AUC=cor(auc_GDSC,auc_CCLE, method="pearson"), Spearman_AUC=cor(auc_GDSC,auc_CCLE, method="spearman"))
+
+drugCorrs
 ```
 
 <hr>
 ####3. Based on the scatterplot and correlation values, would you say that they tend to agree? Why or why not?
 </hr>
 
-```{r}
-#Your code goes here
+```{r, fig.width=10, fig.height=10}
+ 
+# perfect <- data.frame(x=summarizedPharmacoData$, y=summarizedPharmacoData$)
+# cor.coef <- round(cor(perfect$x, perfect$y),2)
+# ggplot(data=perfect, aes(x=x,y=y)) +
+#  geom_point() +
+# ggtitle(paste0("Correlation coefficient = ", cor.coef)) + 
+#  geom_smooth(method='lm', se=FALSE)
+
+pearsonAUC <- drugCorrs$Pearson_AUC
+names( pearsonAUC ) <- drugCorrs$drug
+cellLinesSummary$cors <- pearsonAUC[as.character( cellLinesSummary$drug )]
+cellLinesSummary$drugcor <- sprintf( "%s - cor = %.2f", cellLinesSummary$drug, cellLinesSummary$cors)
+
+
+#cellLinesSummary$cors = paste(cellLinesSummary$drug,drugCorrs$Pearson_AUC)
+
+ggplot(aes(x=auc_GDSC, y=auc_CCLE), data=cellLinesSummary) +
+  facet_wrap( ~ drugcor) +
+  geom_smooth(method='lm', se=FALSE) +
+    geom_point() +
+    xlab("GDSC AUC") +
+    ylab("CCLE AUC") 
 ```
 <hr>
 ####4. Does the AUC or IC50 suggest more agreement between the studies? 
 </hr>
 
-```{r}
-#Your code goes here
+```{r, fig.width=10, fig.height=10}
+library(ggplot2)
+cellLinesSummary <- read.csv("summarizedPharmacoData.csv", header=TRUE)
+
+ggplot(aes(x=-log10(ic50_GDSC/10^6),y=-log10(ic50_CCLE/10^6)), data=cellLinesSummary) +
+  facet_wrap( ~ drug) +
+    geom_point() +
+    xlab("IC50 GDSC") +
+    ylab("IC50 CCLE") 
 ```
+
 <hr>
 ####5. Which drug do you think shows the most consistency between the studies? How about the least? 
 </hr>
 
 ```{r}
-#Your code goes here
+library(dplyr)
+drugCorrs <- cellLinesSummary %>% group_by(drug) %>% summarise(Pearson_ic50=cor(ic50_GDSC,ic50_CCLE, method="pearson"), Spearman_ic50=cor(ic50_GDSC, ic50_CCLE, method="spearman"))
+drugCorrs
+
+library(dplyr)
+drugCorrs <- cellLinesSummary %>% group_by(drug) %>% summarise(Pearson_auc=cor(auc_GDSC,auc_CCLE, method="pearson"), Spearman_AUC=cor(auc_GDSC, auc_CCLE, method="spearman"))
+drugCorrs
+
 ```
 
 <hr>
@@ -160,7 +210,13 @@ ggplot(resistant, aes( y=AUC_study2, x=AUC_study1) ) + geom_point() + ggtitle("S
 </hr>
 
 ```{r}
-#Your code goes here
+library(dplyr)
+drugCorrs <- cellLinesSummary %>% group_by(drug) %>% summarise(Pearson_ic50=cor(ic50_GDSC,ic50_CCLE, method="pearson"), Spearman_ic50=cor(ic50_GDSC, ic50_CCLE, method="spearman"))
+drugCorrs
+
+library(dplyr)
+drugCorrs <- cellLinesSummary %>% group_by(drug) %>% summarise(Pearson_auc=cor(auc_GDSC,auc_CCLE, method="pearson"), Spearman_AUC=cor(auc_GDSC, auc_CCLE, method="spearman"))
+drugCorrs
 ```
 
 <hr>
@@ -171,6 +227,7 @@ ggplot(resistant, aes( y=AUC_study2, x=AUC_study1) ) + geom_point() + ggtitle("S
 install.packages("energy")
 load(energy)
 ```
+
 
 Then, you can compute distance correlation with the `dcor()` function. How does this correlation measure compare to Pearson and Spearman? Do your conclusions about the agreement between the two studies change at all using this measure?
 
