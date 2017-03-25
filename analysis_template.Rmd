@@ -17,6 +17,12 @@ The questions below will help guide you in your analyses and interpretation of r
 
 For each answer, include text by simply typing below the question. Include code in code blocks (include three back ticks at the start and end of each code block):
 
+You may find it helpful to use the version control and code sharing system called GitHub to work together with your team so that all of you can edit the same document and keep track of its changes. Here is a [setup guide](https://github.com/datasciencelabs/2016/blob/master/lectures/git-and-github/setting-up-git.Rmd) and [brief introduction to Git and GitHub](https://github.com/datasciencelabs/2016/blob/master/lectures/git-and-github/version-control.Rmd) from another course. The mentors will be able to help if you run into problems. 
+
+## Questions:
+
+### Exploratory analysis of pharmacogenomic data
+
 The data we are using in this Replicathon stems from two different investigations; article 1 and article 2. To have R Studio access the data, we used the following string of code:
 ```{r}
 # The file "rawPharmacoData.csv" contains the raw data to be analyzed.
@@ -24,12 +30,6 @@ rawFile <- "rawPharmacoData.csv"
 pharmacoData <- read.csv(rawFile)
 
 ```
-
-You may find it helpful to use the version control and code sharing system called GitHub to work together with your team so that all of you can edit the same document and keep track of its changes. Here is a [setup guide](https://github.com/datasciencelabs/2016/blob/master/lectures/git-and-github/setting-up-git.Rmd) and [brief introduction to Git and GitHub](https://github.com/datasciencelabs/2016/blob/master/lectures/git-and-github/version-control.Rmd) from another course. The mentors will be able to help if you run into problems. 
-
-## Questions:
-
-### Exploratory analysis of pharmacogenomic data
 
 <hr>
 #### 1. How many cell-lines are contained in the data?
@@ -61,7 +61,7 @@ tapply( pharmacoData$doseID, pharmacoData$study, function(x){length( unique( x )
 #### 3. Histograms, appart from telling how is the data distributed, can also make evident potential problems with the data. Plot a histogram of drug viabilities. Does it look as one would expect from the description of the data?
 <hr>
 
-Viability is defined the percentage of cells that survive upon exposure to a certain drug. The histograms present the frequency distribution of distinct cell lines, drugs, concentrations used in two different studies: CCLE and GDSC. If the asumtion is that the pharmacological agent is meant to diminish the concentration ****CHECK***
+Viability is defined the percentage of cells that survive upon exposure to a certain drug. The histograms present the frequency distribution of distinct cell lines, drugs, concentrations used in two different studies: CCLE and GDSC. If the asumtion is that the pharmacological agent is meant to diminish the concentration **CHECK**
 
 
 ```{r}
@@ -84,7 +84,7 @@ ggplot( pharmacoData, aes(viability ) ) + geom_histogram(fill = "yellow", colour
 #### 4. How many viability data points are within the expected range according to the definition of viability (e.g. above 0 and below 100)? Try to come up with explanations about the values that are out of range. Are these due to technical issues? Biology?
 <hr>
 
-Defining viability as the percentage of cells that survive upon exposure to a certain drug, the range of survival should be between 0% and 100%- asuming no additional growth happens. The data points contained in (0,100) would be 27,626 observations out of a sample of 43427. Notwithstanding, many outliers were found, totaling a number of 15,801 observations, that make up aproximately 36.39% of the total sample. This large number of outliers could be related to many factors such as: the organism's tolerance of the pharmacological agents, faulty pharmacological agents, human error, measurement error, and other environmental interactions occurring in the pietry dish.  
+Defining viability as the percentage of cells that survive upon exposure to a certain drug, the range of survival should be between 0% and 100%- asuming no additional growth happens. The data points contained in (0,100) would be 27,626 observations out of a sample of 43427. Not with standing, many outliers were found, totaling a number of 15,801 observations, that make up aproximately 36.39% of the total sample. This large number of outliers could be related to many factors such as: the organism's tolerance of the pharmacological agents, faulty pharmacological agents, human error, measurement error, and other environmental interactions occurring in the pietry dish.  
 
 ```{r}
 #
@@ -141,8 +141,7 @@ ggplot(aes(x=auc_GDSC, y=auc_CCLE), data=cellLinesSummary) + facet_wrap( ~ drug)
 ```{r}
 library(dplyr)
 
-drugCorrs <- cellLinesSummary %>% 
-    group_by(drug) %>% summarise(Pearson_AUC=cor(auc_GDSC,auc_CCLE, method="pearson"), Spearman_AUC=cor(auc_GDSC,auc_CCLE, method="spearman"))
+drugCorrs <- cellLinesSummary %>% group_by(drug) %>% summarise(Pearson_AUC=cor(auc_GDSC,auc_CCLE, method="pearson"), Spearman_AUC=cor(auc_GDSC,auc_CCLE, method="spearman"))
 
 drugCorrs
 ```
@@ -161,16 +160,19 @@ drugCorrs
 #  geom_smooth(method='lm', se=FALSE)
 
 pearsonAUC <- drugCorrs$Pearson_AUC
+
 names( pearsonAUC ) <- drugCorrs$drug
+
 cellLinesSummary$cors <- pearsonAUC[as.character( cellLinesSummary$drug )]
+
 cellLinesSummary$drugcor <- sprintf( "%s - cor = %.2f", cellLinesSummary$drug, cellLinesSummary$cors)
 
 
 #cellLinesSummary$cors = paste(cellLinesSummary$drug,drugCorrs$Pearson_AUC)
 
 ggplot(aes(x=auc_GDSC, y=auc_CCLE), data=cellLinesSummary) +
-  facet_wrap( ~ drugcor) +
-  geom_smooth(method='lm', se=FALSE) +
+    facet_wrap( ~ drugcor) +
+    geom_smooth(method='lm', se=FALSE) +
     geom_point() +
     xlab("GDSC AUC") +
     ylab("CCLE AUC") 
@@ -180,14 +182,17 @@ ggplot(aes(x=auc_GDSC, y=auc_CCLE), data=cellLinesSummary) +
 </hr>
 
 ```{r, fig.width=10, fig.height=10}
+
 library(ggplot2)
+
 cellLinesSummary <- read.csv("summarizedPharmacoData.csv", header=TRUE)
 
-ggplot(aes(x=-log10(ic50_GDSC/10^6),y=-log10(ic50_CCLE/10^6)), data=cellLinesSummary) +
-  facet_wrap( ~ drug) +
-    geom_point() +
-    xlab("IC50 GDSC") +
-    ylab("IC50 CCLE") 
+ggplot(aes(x=-log10(ic50_GDSC/10^6),y=-log10(ic50_CCLE/10^6)), 
+      data=cellLinesSummary) + 
+      facet_wrap( ~ drug) + 
+      geom_point() + 
+      xlab("IC50 GDSC") + 
+      ylab("IC50 CCLE") 
 ```
 
 <hr>
@@ -196,11 +201,15 @@ ggplot(aes(x=-log10(ic50_GDSC/10^6),y=-log10(ic50_CCLE/10^6)), data=cellLinesSum
 
 ```{r}
 library(dplyr)
+
 drugCorrs <- cellLinesSummary %>% group_by(drug) %>% summarise(Pearson_ic50=cor(ic50_GDSC,ic50_CCLE, method="pearson"), Spearman_ic50=cor(ic50_GDSC, ic50_CCLE, method="spearman"))
+
 drugCorrs
 
 library(dplyr)
+
 drugCorrs <- cellLinesSummary %>% group_by(drug) %>% summarise(Pearson_auc=cor(auc_GDSC,auc_CCLE, method="pearson"), Spearman_AUC=cor(auc_GDSC, auc_CCLE, method="spearman"))
+
 drugCorrs
 
 ```
@@ -211,11 +220,14 @@ drugCorrs
 
 ```{r}
 library(dplyr)
+
 drugCorrs <- cellLinesSummary %>% group_by(drug) %>% summarise(Pearson_ic50=cor(ic50_GDSC,ic50_CCLE, method="pearson"), Spearman_ic50=cor(ic50_GDSC, ic50_CCLE, method="spearman"))
+
 drugCorrs
 
 library(dplyr)
 drugCorrs <- cellLinesSummary %>% group_by(drug) %>% summarise(Pearson_auc=cor(auc_GDSC,auc_CCLE, method="pearson"), Spearman_AUC=cor(auc_GDSC, auc_CCLE, method="spearman"))
+
 drugCorrs
 ```
 
@@ -223,14 +235,22 @@ drugCorrs
 ####7. We have explored Pearson and Spearman correlation, but what about other correlation measures? For example, you could try out distance correlation, which is sensitive to nonlinear relationships. You can find this measure in the `energy` R package, which you'll need to install and load with the following commands:
 </hr>
 
-```{r, eval=FALSE}
-install.packages("energy")
-load(energy)
+```{r}
+install.packages("energy", repos='http://cran.us.r-project.org')
 ```
-
 
 Then, you can compute distance correlation with the `dcor()` function. How does this correlation measure compare to Pearson and Spearman? Do your conclusions about the agreement between the two studies change at all using this measure?
 
+```{r}
+library(energy)
+library(dplyr)
+
+drugCorrs <- cellLinesSummary %>% 
+    group_by(drug) %>% summarise(Pearson_AUC=cor(auc_GDSC,auc_CCLE, method="pearson"), Spearman_AUC=cor(auc_GDSC,auc_CCLE, method="spearman"), Distance_Correlation = dcor(auc_GDSC,auc_CCLE))
+
+drugCorrs
+
+```
 ### Identifying biological factors that influence replicability of pharmacogenomic studies
 
 1. Are there any cell lines that seem to be consistently sensitive? (Hint: look for the 5 cell lines which seem the most resistant in both studies according to the average drug response by AUC; code from Tutorial 3 may help) What effect might this have on your conclusions and interpretations of the agreement between the studies? For example, do you observe any increase in replicability (as measured by correlation of drug response) if you exclude the most resistant cell lines?
